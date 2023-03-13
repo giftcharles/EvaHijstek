@@ -1,4 +1,14 @@
 module.exports = {
+  theme: {
+    extend:
+    {
+      fontFamily: {
+        'myriad': ['Myriad Pro Regular', 'sans-serif'],
+        'myriad-bold' : ['Myriad Pro Bold', 'sans-serif'],
+        'myriad-light' : ['Myriad Pro Light', 'sans-serif']
+      },
+    },
+  },
   daisyui: {
     themes: [
       {
