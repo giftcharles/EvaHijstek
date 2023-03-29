@@ -22,8 +22,8 @@ const showMobileNav = ref(null);
 </script>
 
 <template>
-  <div class="top-0 left-0 fixed flex flex-col w-full flex-wrap z-50">
-    <div class="navbar bg-base-100 font-myriad min-w-full">
+  <div class="top-0 bg-base-100 left-0 fixed flex flex-col w-full flex-wrap z-50">
+    <div class="navbar font-myriad min-w-full">
       <div class="flex-1 ml-3">
         <a class="normal-case text-xl font-myriad-bold tracking-widest">EVA HIJSTEK</a>
       </div>
@@ -35,7 +35,7 @@ const showMobileNav = ref(null);
         </ul>
       </div>
 
-      <button class="btn btn-ghost mr-3" @click="showMobileNav = !showMobileNav">
+      <button class="btn btn-ghost mr-3 md:hidden" @click="showMobileNav = !showMobileNav">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

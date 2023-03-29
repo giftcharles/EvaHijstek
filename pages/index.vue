@@ -7,14 +7,14 @@
     </span>
 
     <section class="flex gap-x-9 relative">
-      <div>
+      <div class="flex-1">
         <img
           src="~/assets/images/eva-guinness.jpeg"
           alt="Eva portfolio image"
           class="w-full sticky top-[65px]"
         />
       </div>
-      <div class="flex flex-col gap-y-3 max-w-[40%]">
+      <div class="flex flex-col gap-y-3 max-w-[34.7%]">
         <h3 class="font-bold tracking-wide">Marketing, promotion & creative design</h3>
 
         <p class="font-myriad-light text-[14px]">
@@ -68,7 +68,7 @@
     </section>
 
     <section class="flex gap-x-9 relative">
-      <div class="w-full max-w-[60%]">
+      <div class="w-full max-w-[65.3%]">
         <ArticlePost
           class="border-t-[1px] border-[#e3e3e370]"
           v-for="index in 7"
@@ -79,7 +79,7 @@
       <div></div>
     </section>
 
-    <section class="flex flex-col items-center max-w-[60%]">
+    <section class="flex flex-col items-center max-w-[65.3%]">
       <a id="#contact" class="hidden"></a>
       <span class="text-[180px] font-myriad-bold">Contact.</span>
       <div class="flex flex-col">

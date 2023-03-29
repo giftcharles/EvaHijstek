@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.2.0",
+    "@vueup/vue-quill": "^1.1.1",
     "daisyui": "^2.46.0",
     "firebase": "^9.17.1",
     "nuxt": "^3.0.0"

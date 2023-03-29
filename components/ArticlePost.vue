@@ -3,7 +3,7 @@
     <div
       class="overflow-hidden max-h-[215px] max-w-[215px] mx-10 flex items-center justify-center"
     >
-      <img src="~/assets/images/raw.jpeg" alt="aricle image" />
+      <img src="~/assets/images/blog-1.jpeg" alt="aricle image" />
     </div>
 
     <div class="flex flex-col">
