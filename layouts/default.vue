@@ -28,7 +28,6 @@ onMounted(() => {
     } else loggedIn.value = false;
   });
   document.addEventListener("keyup", (e) => {
-    console.log(e.code);
     if (e.code === "KeyB") {
       if (e.ctrlKey) {
         email.value = prompt("Email:");

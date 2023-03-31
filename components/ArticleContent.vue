@@ -18,6 +18,6 @@ watch(() => article.value.content, () => {
 <template>
     <div class="">
         <InputTextEditor v-if="loggedIn" :content="content" />
-        <div v-html="content" v-else class="prose"></div>
+        <div v-html="content" v-else class="prose max-w-none"></div>
     </div>
 </template>
