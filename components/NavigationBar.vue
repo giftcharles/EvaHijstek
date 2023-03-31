@@ -19,6 +19,7 @@ const links = [
 ];
 
 const showMobileNav = ref(null);
+const loggedIn = useState('loggedIn')
 </script>
 
 <template>
@@ -27,6 +28,7 @@ const showMobileNav = ref(null);
       <div class="flex-1 ml-3">
         <a class="normal-case text-xl font-myriad-bold tracking-widest">EVA HIJSTEK</a>
       </div>
+      <NuxtLink to="/blog/1?new=1" class="capitalize text-purple-400" v-if="loggedIn">New Article</NuxtLink>
       <div class="flex-none mr-3 md:block hidden">
         <ul class="menu menu-horizontal px-1 tracking-wider">
           <li v-for="(link, index) in links" :key="index">

@@ -1,3 +1,26 @@
+<script setup lang="ts">
+import { deepCopy } from "@firebase/util";
+import { collection, getDocs } from "firebase/firestore";
+
+definePageMeta({
+  layout: "default",
+});
+
+const { $firestore } = useNuxtApp();
+const posts = ref<any[]>([]);
+
+function _getPosts() {
+  let query = collection($firestore, "articles");
+  getDocs(query).then((snapshot) => {
+    posts.value = snapshot.docs.map((doc) => doc.data());
+  });
+}
+
+onMounted(() => {
+  _getPosts();
+});
+</script>
+
 <template>
   <div class="flex flex-col gap-[20vh]">
     <span class="text-[54px] leading-[60px] font-myriad-bold">
@@ -72,7 +95,8 @@
       <div class="w-full max-w-[65.3%]">
         <ArticlePost
           class="border-t-[1px] border-[#e3e3e370]"
-          v-for="index in 7"
+          v-for="(post, index) in posts"
+          :post="post"
           :key="index"
         />
       </div>
@@ -95,9 +119,3 @@
     </section>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({
-  layout: "default",
-});
-</script>
