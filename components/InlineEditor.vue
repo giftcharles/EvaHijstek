@@ -24,6 +24,7 @@ const props = withDefaults(
 
 const emit = defineEmits(["update:modelValue"]);
 const tags = ref<any[]>(props.inputType == "tags" ? props.items : []);
+const loggedIn = useState('loggedIn')
 function selectChange(event) {
   emit("update:modelValue", event.target.value);
 }
@@ -44,8 +45,8 @@ function save($event) {
 <template>
   <div class="flex">
     <slot />
-    <div class="w-3"></div>
-    <div class="dropdown dropdown-left">
+    <div class="w-3" v-if="loggedIn"></div>
+    <div class="dropdown dropdown-left" v-if="loggedIn">
       <button tabindex="0" class="bg-transparent rounded-full" @click="">
         <svg
           xmlns="http://www.w3.org/2000/svg"

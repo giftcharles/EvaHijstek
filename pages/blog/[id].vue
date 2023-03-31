@@ -11,7 +11,8 @@ const router = useRouter();
 const { $firestore, $storage } = useNuxtApp();
 const isNew = ref(false);
 const imageInput = ref();
-const loadind_image = ref(false)
+const loadind_image = ref(false);
+const loggedIn = useState("loggedIn");
 const article = ref<any>({
   title: "<TITLE HERE>",
   client: "<CLIENT NAME HERE>",
@@ -24,16 +25,16 @@ const article = ref<any>({
   featured_image: null,
 });
 
-function _getPostArticle(){
-  getDoc(doc($firestore, 'articles', route.params.id)).then(doc => {
-    article.value = doc.data()
-  })
+function _getPostArticle() {
+  getDoc(doc($firestore, "articles", route.params.id)).then((doc) => {
+    article.value = doc.data();
+  });
 }
 
 onMounted(() => {
   console.log("new", route.query);
   isNew.value = !!route.query.new;
-  if(!isNew.value) _getPostArticle()
+  if (!isNew.value) _getPostArticle();
 });
 
 function saveContent(content: any) {
@@ -41,8 +42,14 @@ function saveContent(content: any) {
 }
 
 function save() {
-  article.value.slug = article.value.slug_text.toLowerCase().slice(0,20).replace(' ', '_').replace(/\W/g, '')
-  article.value.slug = article.value.slug + `_${Date.now().toString().slice(5, Date.now().toString().length)}`
+  article.value.slug = article.value.slug_text
+    .toLowerCase()
+    .slice(0, 20)
+    .replace(" ", "_")
+    .replace(/\W/g, "");
+  article.value.slug =
+    article.value.slug +
+    `_${Date.now().toString().slice(5, Date.now().toString().length)}`;
   let docRef = doc($firestore, "articles", article.value.slug);
 
   if (!route.query.new) {
@@ -53,11 +60,13 @@ function save() {
 
   Object.assign(data, article.value);
 
-  return setDoc(docRef, data, { merge: true }).then(() => {
-    router.push({
-      path: `/blog/${article.value.slug}`
+  return setDoc(docRef, data, { merge: true })
+    .then(() => {
+      router.push({
+        path: `/blog/${article.value.slug}`,
+      });
     })
-  }).catch(console.error);
+    .catch(console.error);
 }
 
 function imageInputChange(event) {
@@ -79,7 +88,7 @@ function _uploadFileToStorage(f: File) {
     () => {
       return getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
         article.value.featured_image = downloadURL;
-        loadind_image.value = false
+        loadind_image.value = false;
       });
     }
   );
@@ -108,6 +117,7 @@ function formatDate(date) {
 }
 
 provide("save", saveContent);
+provide("article", article);
 </script>
 
 <template>
@@ -145,7 +155,7 @@ provide("save", saveContent);
 
           <button
             class="btn btn-ghost bg-transparent absolute top-3 right-3 rounded-full w-16 h-16"
-            v-if="!isNew || article.featured_image"
+            v-if="loggedIn && (!isNew || article.featured_image)"
             @click="$refs.imageInput.click()"
           >
             <svg
@@ -187,7 +197,7 @@ provide("save", saveContent);
           </button>
           <span class="font-bold tracking-wide">Portfolio Overview</span>
 
-          <button @click="save" class="btn btn-ghost ml-auto">
+          <button v-if="loggedIn" @click="save" class="btn btn-ghost ml-auto">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -212,7 +222,11 @@ provide("save", saveContent);
             </svg>
           </button>
 
-          <button :disabled="isNew" class="btn btn-ghost">
+          <button
+            :disabled="isNew"
+            :class="loggedIn ? '' : 'ml-auto'"
+            class="btn btn-ghost"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

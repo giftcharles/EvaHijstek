@@ -7,18 +7,17 @@ const props = withDefaults(
     content: "",
   }
 );
-
-const content = ref(props.content)
-
-watch(() => props.content, () => {
-    console.log(props.content)
-    content.value = props.content
+const article = inject('article')
+const loggedIn = useState('loggedIn')
+const content = ref(article.value.content) 
+watch(() => article.value.content, () => {
+    content.value = article.value.content
 })
-
 </script>
 
 <template>
     <div class="">
-        <InputTextEditor v-model="content" />
+        <InputTextEditor v-if="loggedIn" :content="content" />
+        <div v-html="content" v-else class="prose"></div>
     </div>
 </template>

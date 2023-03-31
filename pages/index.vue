@@ -30,11 +30,12 @@
         </p>
 
         <p class="font-myriad-light text-[14px]">
-          Check out my Portfolio to see my most recent projects. During my time in Dar es
-          Salaam, Tanzania, I got introduced to the newest generation of visionaries in
-          the creative art scene. Amongst them, the Meraki Collective. I have been able to
-          assist them in the realization of their goal to promote African arts and culture
-          to international audiences through branding & web design.
+          Check out my <a href="#portfolio">Portfolio</a> to see my most recent projects.
+          During my time in Dar es Salaam, Tanzania, I got introduced to the newest
+          generation of visionaries in the creative art scene. Amongst them, the
+          <a href="">Meraki Collective</a>. I have been able to assist them in the
+          realization of their goal to promote African arts and culture to international
+          audiences through branding & web design.
         </p>
 
         <a href="#past-expiriences" class="hidden"></a>
@@ -83,7 +84,9 @@
       <a id="#contact" class="hidden"></a>
       <span class="text-[180px] font-myriad-bold">Contact.</span>
       <div class="flex flex-col">
-      <span class="my-[7vh] text-2xl font-bold tracking-wider">EvaHijstek@gmail.com</span>
+        <span class="my-[7vh] text-2xl font-bold tracking-wider"
+          >EvaHijstek@gmail.com</span
+        >
         <span class="font-myriad-bold text-xl">Social</span>
         <a class="">LinkedIn</a>
         <a class="">Instagram</a>

@@ -9,6 +9,7 @@ const props = withDefaults(
     classes?: string;
     modelValue?: string;
     toolbar?: string;
+    content?: string;
     inputType?: string
   }>(),
   {
@@ -18,6 +19,7 @@ const props = withDefaults(
     classes: "",
     modelValue: "",
     toolbar: "",
+    content: ""
   }
 );
 const emit = defineEmits(["update:modelValue"]);
@@ -41,6 +43,10 @@ const toolbar = ref([
   ],
 ]);
 
+watch(() => props.content, () => {
+  if(props.content.length > 0) editor.value!.setHTML(props.content);
+})
+
 const options = ref({
   modules: {
     toolbar: {
@@ -56,6 +62,7 @@ const options = ref({
 
 function quillReady() {
   editor.value!.setHTML(props.modelValue);
+  if(props.content.length > 0) editor.value!.setHTML(props.content);
   document.getElementsByClassName("ql-save")[0].textContent = "Save";
 }
 
@@ -64,6 +71,7 @@ function updateContent() {
   save(editor.value.getHTML())
 }
 </script>
+
 <template>
   <div class="bg-transparent flex rounded-lg">
     <div class="flex flex-col w-full">
