@@ -34,10 +34,11 @@ watch(tags, () => {
 });
 
 function save($event) {
-  try {
-    emit('update:modelValue', input.value.target.value)
-  } catch (error) {
+  console.log("input.value.target.value", input.value.target.value)
+  if(props.inputType == 'tag') {
     emit('update:modelValue', tags.value)
+  } else {
+    emit('update:modelValue', input.value.target.value)
   }
 } 
 </script>
