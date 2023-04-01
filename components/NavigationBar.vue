@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { signOut } from "firebase/auth";
+
 const links = [
   {
     text: "Past experiences.",
@@ -20,15 +22,22 @@ const links = [
 
 const showMobileNav = ref(null);
 const loggedIn = useState('loggedIn')
+const {$auth} = useNuxtApp()
+function logout() {
+  signOut($auth).then(() => {
+    console.log('we are logged out!')
+  })
+}
 </script>
 
 <template>
   <div class="top-0 bg-base-100 left-0 fixed flex flex-col w-full flex-wrap z-50">
     <div class="navbar font-myriad min-w-full">
       <div class="flex-1 ml-3">
-        <a class="normal-case text-xl font-myriad-bold tracking-widest">EVA HIJSTEK</a>
+        <NuxtLink to="/" class="normal-case text-xl font-myriad-bold tracking-widest">EVA HIJSTEK</NuxtLink>
       </div>
-      <NuxtLink to="/blog/1?new=1" class="capitalize text-purple-400" v-if="loggedIn">New Article</NuxtLink>
+      <NuxtLink to="/blog/1?new=1" class="capitalize text-purple-400 mr-2" v-if="loggedIn">New Article</NuxtLink>
+      <button @click="logout" class="capitalize text-red-400" v-if="loggedIn">LogOut</button>
       <div class="flex-none mr-3 md:block hidden">
         <ul class="menu menu-horizontal px-1 tracking-wider">
           <li v-for="(link, index) in links" :key="index">

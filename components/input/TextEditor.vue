@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import { getDownloadURL, uploadBytesResumable, ref as StorageRef } from 'firebase/storage'
+
 const props = withDefaults(
   defineProps<{
     variant?: string;
@@ -10,7 +12,7 @@ const props = withDefaults(
     modelValue?: string;
     toolbar?: string;
     content?: string;
-    inputType?: string
+    inputType?: string;
   }>(),
   {
     variant: "",
@@ -19,12 +21,14 @@ const props = withDefaults(
     classes: "",
     modelValue: "",
     toolbar: "",
-    content: ""
+    content: "",
   }
 );
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "save"]);
 const editor = ref<HTMLElement | null>(null);
-const save = inject('save')
+const saver = inject("save");
+const showEditor = useState("show_editor", () => false);
+const {$storage} = useNuxtApp()
 const toolbar = ref([
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
   [{ size: ["small", false, "large", "huge"] }],
@@ -43,18 +47,25 @@ const toolbar = ref([
   ],
 ]);
 
-watch(() => props.content, () => {
-  if(props.content.length > 0) editor.value!.setHTML(props.content);
-})
+watch(
+  () => props.content,
+  () => {
+    if (props.content.length > 0 && !showEditor) editor.value!.setHTML(props.content);
+  }
+);
 
 const options = ref({
   modules: {
     toolbar: {
       container: toolbar,
       handlers: {
+        image: () => {
+          document.getElementById("file").click();
+        },
         save: () => {
-          save(editor.value.getHTML())
-        }
+          saver(editor.value.getHTML());
+          showEditor.value = false;
+        },
       },
     },
   },
@@ -62,19 +73,52 @@ const options = ref({
 
 function quillReady() {
   editor.value!.setHTML(props.modelValue);
-  if(props.content.length > 0) editor.value!.setHTML(props.content);
+  if (props.content.length > 0) editor.value!.setHTML(props.content);
   document.getElementsByClassName("ql-save")[0].textContent = "Save";
 }
 
 function updateContent() {
   emit("update:modelValue", editor.value.getHTML());
-  save(editor.value.getHTML())
+  saver(editor.value.getHTML());
+}
+
+function uploadFunction(e) {
+  _uploadFileToStorage(e.target.files[0]);
+}
+
+function _uploadFileToStorage(f: File) {
+  console.log(editor.value.getEditor())
+  const storageRef = StorageRef(
+    $storage,
+    `images/blog/${f.name.replace(".", "")}-${Date.now()}.${f.name.split(".").pop()}`
+  );
+
+  const uploadTask = uploadBytesResumable(storageRef, f);
+
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {},
+    (error) => {
+      _uploadFileToStorage(f);
+    },
+    () => {
+      return getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        const range = editor.value.getQuill() .selection.savedRange;
+        editor.value.getQuill().insertEmbed(
+          range.index,
+          "image",
+          downloadURL
+        );
+      });
+    }
+  );
 }
 </script>
 
 <template>
   <div class="bg-transparent flex rounded-lg">
     <div class="flex flex-col w-full">
+      <input type="file" @change="uploadFunction" id="file" hidden />
       <client-only
         ><QuillEditor
           ref="editor"

@@ -26,9 +26,13 @@ const article = ref<any>({
 });
 
 function _getPostArticle() {
-  getDoc(doc($firestore, "articles", route.params.id)).then((doc) => {
-    article.value = doc.data();
-  });
+  console.log(route.params.id);
+  getDoc(doc($firestore, "articles", route.params.id))
+    .then((doc) => {
+      console.log(doc.data());
+      article.value = doc.data();
+    })
+    .catch(console.error);
 }
 
 onMounted(() => {
@@ -42,18 +46,20 @@ function saveContent(content: any) {
 }
 
 function save() {
-  article.value.slug = article.value.slug_text
-    .toLowerCase()
-    .slice(0, 20)
-    .replace(" ", "_")
-    .replace(/\W/g, "");
-  article.value.slug =
-    article.value.slug +
-    `_${Date.now().toString().slice(5, Date.now().toString().length)}`;
   let docRef = doc($firestore, "articles", article.value.slug);
-
   if (!route.query.new) {
     docRef = doc($firestore, "articles", route.params.id);
+  }
+  else {
+    article.value.slug = article.value.slug_text
+      .toLowerCase()
+      .slice(0, 20)
+      .replace(" ", "_")
+      .replace(/\W/g, "");
+    article.value.slug =
+      article.value.slug +
+      `_${Date.now().toString().slice(5, Date.now().toString().length)}`;
+
   }
 
   let data = {};
@@ -122,7 +128,7 @@ provide("article", article);
 
 <template>
   <div class="flex flex-col gap-[20vh] mt-[27vh] w-full">
-    <section class="flex gap-x-9 relative">
+    <section class="flex gap-x-9 relative" v-if="article">
       <div class="flex-1">
         <div class="relative">
           <input type="file" ref="imageInput" @change="imageInputChange" class="hidden" />

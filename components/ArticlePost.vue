@@ -10,7 +10,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <a href="#" class="flex py-6 hover:bg-white group pr-6">
+  <NuxtLink :to="`/blog/${props.post.slug}`" href="#" class="flex py-6 hover:bg-white group pr-6">
     <div
       class="overflow-hidden max-h-[215px] max-w-[215px] mx-10 flex items-center justify-center"
     >
@@ -35,5 +35,5 @@ const props = withDefaults(
         </span
       >
     </div>
-  </a>
+  </NuxtLink>
 </template>
