@@ -5,6 +5,7 @@
       type="text"
       :list="id"
       autocomplete="off"
+      class="p-3 outline-none"
       @keydown.enter="addTag(newTag)"
       @keydown.prevent.tab="addTag(newTag)"
       @keydown.delete="newTag.length || removeTag(tags.length - 1)"
@@ -21,7 +22,7 @@
       <li
         v-for="(tag, index) in tags"
         :key="tag"
-        class="tag"
+        class="tag bg-base-100 transition-all"
         :class="{ duplicate: tag === duplicate }"
       >
         {{ tag }}
@@ -120,16 +121,13 @@ ul {
   overflow-x: auto;
 }
 .tag {
-  background: rgb(250, 104, 104);
   padding: 5px;
-  border-radius: 4px;
   color: white;
   white-space: nowrap;
   transition: 0.1s ease background;
 }
 input {
   width: 100%;
-  padding: 10px;
 }
 .delete {
   color: white;

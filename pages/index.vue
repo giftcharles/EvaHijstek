@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { deepCopy } from "@firebase/util";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
 
 definePageMeta({
   layout: "default",
 });
 
+const loggedIn = useState('loggedIn')
 const { $firestore } = useNuxtApp();
 const posts = ref<any[]>([]);
-
+const experienceSub = ref(null)
+const educationSub = ref(null)
+const education = ref([])
+const experiences = ref([])
 function _getPosts() {
   let query = collection($firestore, "articles");
   getDocs(query).then((snapshot) => {
@@ -16,8 +19,28 @@ function _getPosts() {
   });
 }
 
+function _getExpriences() {
+  let query = collection($firestore, "experiences");
+  experienceSub.value = onSnapshot(query, (snapshot) => {
+    experiences.value = snapshot.docs.map((doc) => doc.data());
+  });
+}
+
+function _getEducation() {
+  let query = collection($firestore, "education");
+  educationSub.value = onSnapshot(query, (snapshot) => {
+    education.value = snapshot.docs.map((doc) => doc.data());
+  });
+}
+
+onUnmounted(() => {
+  experienceSub.value()
+})
+
 onMounted(() => {
   _getPosts();
+  _getExpriences();
+  _getEducation();
 });
 </script>
 
@@ -53,29 +76,38 @@ onMounted(() => {
         </p>
 
         <p class="font-myriad-light text-[14px]">
-          Check out my <a href="#portfolio">Portfolio</a> to see my most recent projects.
-          During my time in Dar es Salaam, Tanzania, I got introduced to the newest
-          generation of visionaries in the creative art scene. Amongst them, the
-          <a href="">Meraki Collective</a>. I have been able to assist them in the
-          realization of their goal to promote African arts and culture to international
-          audiences through branding & web design.
+          Check out my <a href="#portfolio" class="underline">Portfolio</a> to see my most
+          recent projects. During my time in Dar es Salaam, Tanzania, I got introduced to
+          the newest generation of visionaries in the creative art scene. Amongst them,
+          the <a href="merakirepp.com" class="underline">Meraki Collective</a>. I have
+          been able to assist them in the realization of their goal to promote African
+          arts and culture to international audiences through branding & web design.
         </p>
 
         <a href="#past-expiriences" class="hidden"></a>
-        <h3 class="font-bold tracking-wide mt-[10vh]">Past experiences.</h3>
+        <div class="flex items-center mt-[10vh]">
+          <h3 class="font-bold tracking-wide">Past experiences.</h3>
+          <AddExperience />
+        </div>
         <hr class="border-gray-100 mb-3" />
 
         <div class="flex flex-col">
-          <Experience v-for="index in 6" :key="index" />
+          <Experience v-for="experience in experiences" :experience="experience" :key="experience.id" />
         </div>
 
         <a id="education" class="hidden"></a>
-        <h3 class="font-bold tracking-wide mt-[10vh]">Education.</h3>
+        <div class="flex items-center mt-[10vh]">
+          <h3 class="font-bold tracking-wide mt-[10vh]">Education.</h3>
+          <AddEducation />
+        </div>
         <hr class="border-gray-100 mb-3" />
 
         <div class="flex flex-col">
-          <Education v-for="index in 7" :key="index" />
+          <Education v-for="edu in education" :education="edu" :key="edu.id" />
+          <!-- <Education v-for="index in 7" :k ey="index" /> -->
         </div>
+
+        
 
         <h3 class="font-bold tracking-wide mt-[10vh]">Portfolio.</h3>
         <hr class="border-gray-100 mb-3" />
