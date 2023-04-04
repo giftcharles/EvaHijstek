@@ -185,7 +185,7 @@ provide("article", article);
       </div>
       <div class="flex flex-col gap-y-3 max-w-[34.7%] w-full">
         <div class="flex items-center">
-          <button class="btn btn-ghost mr-1">
+          <button class="btn btn-ghost mr-1" @click="$router.go(-1)">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

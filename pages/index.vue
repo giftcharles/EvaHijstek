@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
 
 definePageMeta({
   layout: "default",
@@ -20,15 +20,15 @@ function _getPosts() {
 }
 
 function _getExpriences() {
-  let query = collection($firestore, "experiences");
-  experienceSub.value = onSnapshot(query, (snapshot) => {
+  let q = query(collection($firestore, "experiences"), orderBy('year', 'desc'));
+  experienceSub.value = onSnapshot(q, (snapshot) => {
     experiences.value = snapshot.docs.map((doc) => doc.data());
   });
 }
 
 function _getEducation() {
-  let query = collection($firestore, "education");
-  educationSub.value = onSnapshot(query, (snapshot) => {
+  let q = query(collection($firestore, "education"), orderBy('year', 'desc'));
+  educationSub.value = onSnapshot(q, (snapshot) => {
     education.value = snapshot.docs.map((doc) => doc.data());
   });
 }

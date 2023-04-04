@@ -7,6 +7,7 @@ const props = withDefaults(
     education: null,
   }
 );
+const loggedIn = useState('loggedIn')
 const editingEducation = useState('edu_edit', () => null)
 function openEducationModal() {
     editingEducation.value = JSON.parse(JSON.stringify(props.education))
@@ -15,18 +16,22 @@ function openEducationModal() {
 </script>
 
 <template>
-    <div class="flex p-3 bg-transparent items-start">
-        <span class="italic text-white w-24 font-myriad-light tracking-wide">{{ $.vnode.key > 1 ? 2024 - $.vnode.key : 'Current' }}</span>
+    <div v-if="props.education" class="flex p-3 bg-transparent items-start">
+        <span class="italic text-white w-24 font-myriad-light">{{
+        props.education.year === new Date().getFullYear()
+        ? "Current"
+        : props.education.year
+    }}</span>
         <div class="flex flex-col">
-            <span class="text-xl font-semibolsd">{{ props.education.title }}</span>
-            <span class="font-myriad-light">{{ props.education.level }}</span>
-            <span class="font-myriad-light">{{ props.education.credential }}</span>
-            <span class="font-myriad-light">Educational Institution : {{ props.education.institution }}</span>
-            <span class="font-myriad-light">Country {{ props.education.country }}</span>
-            <span class="mt-3 font-myriad-light">Extra: {{ props.education.extra }}</span>
+            <span class="text-xl font-semibolsd" v-if="!!props.education.title">{{ props.education.title }}</span>
+            <span class="font-myriad-light" v-if="!!props.education.level">{{ props.education.level }}</span>
+            <span class="font-myriad-light"  v-if="!!props.education.credential">{{ props.education.credential }}</span>
+            <span class="font-myriad-light" v-if="!!props.education.institution">Educational Institution : {{ props.education.institution }}</span>
+            <span class="font-myriad-light" v-if="!!props.education.country">Country {{ props.education.country }}</span>
+            <span class="mt-3 font-myriad-light" v-if="props.education.extra">Extra: {{ props.education.extra }}</span>
         </div>
 
-        <button @click="openEducationModal">
+        <button @click="openEducationModal" v-if="loggedIn" class="ml-auto">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

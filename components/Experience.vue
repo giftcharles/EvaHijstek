@@ -8,6 +8,7 @@ const props = withDefaults(
   }
 );
 const editingExperience = useState('exp_edit', () => null)
+const loggedIn = useState('loggedIn')
 function openExperienceModal() {
     editingExperience.value = JSON.parse(JSON.stringify(props.experience))
     document.getElementById("experienced-modal").click();
@@ -15,22 +16,22 @@ function openExperienceModal() {
 </script>
 
 <template>
-  <div class="flex p-3 bg-transparent items-start">
+  <div v-if="props.experience" class="flex p-3 bg-transparent items-start">
     <span class="italic text-white w-24 font-myriad-light">{{
         props.experience.year === new Date().getFullYear()
         ? "Current"
         : props.experience.year
     }}</span>
     <div class="flex flex-col">
-      <span class="text-xl font-semibold">{{ props.experience.title }}</span>
-      <span class="font-myriad-light">{{ props.experience.location }}</span>
-      <span class="font-myriad-light"
+      <span class="text-xl font-semibold" v-if="!!props.experience.title">{{ props.experience.title }}</span>
+      <span class="font-myriad-light" v-if="!!props.experience.location">{{ props.experience.location }}</span>
+      <span class="font-myriad-light" v-if="!!props.experience.activities && props.experience.activities.length > 0"
         >Activities: {{ props.experience.activities.join(", ") }}</span
       >
-      <span class="mt-3 font-myriad-light">{{ props.experience.website }}</span>
+      <span class="mt-3 font-myriad-light" v-if="!!props.experience.website">{{ props.experience.website }}</span>
     </div>
 
-    <button @click="openExperienceModal">
+    <button @click="openExperienceModal" v-if="loggedIn" class="ml-auto">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

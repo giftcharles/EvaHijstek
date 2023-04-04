@@ -154,7 +154,7 @@ function close() {
             <input
               type="text"
               id="country"
-              placeholder="http://"
+              placeholder="eg. Tanzania"
               class="text-black p-3 outline-none"
               v-model="form.country"
             />

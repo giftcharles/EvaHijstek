@@ -83,7 +83,7 @@ function save($event) {
             <textarea
               ref="input"
               :value="props.modelValue"
-              @change="$emit('update:modelValue', $event.target.value.replace(/\./g, ''))"
+              @change="$emit('update:modelValue', $event.target.value)"
               class="bg-gray-200 w-full outline-none text-black"
               autofocus
             ></textarea>
