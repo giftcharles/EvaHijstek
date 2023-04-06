@@ -24,7 +24,7 @@ const props = withDefaults(
 
 const emit = defineEmits(["update:modelValue"]);
 const tags = ref<any[]>(props.inputType == "tags" ? props.items : []);
-const loggedIn = useState('loggedIn')
+const loggedIn = useState("loggedIn");
 function selectChange(event) {
   emit("update:modelValue", event.target.value);
 }
@@ -33,14 +33,17 @@ watch(tags, () => {
   emit("update:modelValue", tags.value);
 });
 
+function handleChange(newTags) {
+  tags.value = newTags;
+}
 function save($event) {
-  console.log("input.value.target.value", input.value.target.value)
-  if(props.inputType == 'tag') {
-    emit('update:modelValue', tags.value)
+  console.log("input.value.target.value", input.value.target.value);
+  if (props.inputType == "tag") {
+    emit("update:modelValue", tags.value);
   } else {
-    emit('update:modelValue', input.value.target.value)
+    emit("update:modelValue", input.value.target.value);
   }
-} 
+}
 </script>
 
 <template>
@@ -103,24 +106,11 @@ function save($event) {
 
           <div v-if="props.inputType == 'tag'">
             <InputTagInput
-              ref="input"
               v-model="tags"
-              :options="props.options"
-              :allowCustom="props.allowCustom"
-              :showCount="props.showCount"
             ></InputTagInput>
-
-            <!-- <vue3-tags-input :tags="props.options"
-                   placeholder="enter some tags"
-                   @on-tags-changed="$event => tags = $event"/> -->
           </div>
 
-          <button
-            class="btn btn-primary capitalize mt-2"
-            @click="save"
-          >
-            Save
-          </button>
+          <button class="btn btn-primary capitalize mt-2" @click="save">Save</button>
         </div>
       </div>
     </div>

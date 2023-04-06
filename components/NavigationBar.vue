@@ -30,6 +30,7 @@ function logout() {
 }
 
 function scrollToView(id) {
+  console.log(id)
   document.getElementById(id).scrollIntoView({
     behavior: "smooth"
   });

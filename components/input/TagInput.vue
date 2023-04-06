@@ -1,185 +1,144 @@
-<template>
-  <div class="tag-input" :class="{ 'with-count': showCount }">
-    <input
-      v-model="newTag"
-      type="text"
-      :list="id"
-      autocomplete="off"
-      class="p-3 outline-none"
-      @keydown.enter="addTag(newTag)"
-      @keydown.prevent.tab="addTag(newTag)"
-      @keydown.delete="newTag.length || removeTag(tags.length - 1)"
-      :style="{ 'padding-left': `${paddingLeft}px` }"
-    />
-
-    <datalist v-if="options" :id="id">
-      <option v-for="option in availableOptions" :key="option" :value="option">
-        {{ option }}
-      </option>
-    </datalist>
-
-    <ul class="tags" ref="tagsUl">
-      <li
-        v-for="(tag, index) in tags"
-        :key="tag"
-        class="tag bg-base-100 transition-all"
-        :class="{ duplicate: tag === duplicate }"
-      >
-        {{ tag }}
-        <button class="delete" @click="removeTag(index)">x</button>
-      </li>
-    </ul>
-    <div v-if="showCount" class="count">
-      <span>{{ tags.length }}</span> tags
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 const props = withDefaults(
   defineProps<{
-    name?: string;
-    options?: any[] | boolean;
-    allowCustom?: boolean;
-    showCount?: boolean;
-    modelValue?: any[];
+    variant?: string;
+    label?: string;
+    icon?: string;
+    placeholder?: string;
+    classes?: string;
+    modelValue?: string[];
   }>(),
   {
-    name: "",
+    variant: "",
+    label: "",
+    icon: "",
+    placeholder: "",
+    classes: "",
     modelValue: () => [],
-    options: false,
-    allowCustom: true,
-    showCount: false,
   }
 );
-const emit = defineEmits(['update:modelValue'])  
-const tags = ref(props.modelValue);
-const newTag = ref("");
-const id = Math.random().toString(36).substring(7);
-
-const addTag = (tag) => {
-  if (!tag) return; // prevent empty tag
-  // only allow predefined tags when allowCustom is false
-  if (!props.allowCustom && !props.options.includes(tag)) return;
-  // return early if duplicate
-  if (tags.value.includes(tag)) {
-    handleDuplicate(tag);
-    return;
-  }
-  tags.value.push(tag);
-  newTag.value = ""; // reset newTag
-};
-const removeTag = (index) => {
-  tags.value.splice(index, 1);
-};
-
-// handling duplicates
-const duplicate = ref(null);
-const handleDuplicate = (tag) => {
-  duplicate.value = tag;
-  setTimeout(() => (duplicate.value = null), 1000);
-  newTag.value = "";
-};
-
-// positioning and handling tag change
-const paddingLeft = ref(10);
-const tagsUl = ref(null);
-const onTagsChange = () => {
-  // position cursor
-  const extraCushion = 15;
-  paddingLeft.value = tagsUl.value.clientWidth + extraCushion;
-  // scroll to end of tags
-  tagsUl.value.scrollTo(tagsUl.value.scrollWidth, 0);
-  // emit value on tags change
+const emit = defineEmits(["update:modelValue"]);
+const input = ref<HTMLInputElement | null>(null);
+const tags = ref<string[]>(props.modelValue);
+watch(tags, (v) => {
   emit("update:modelValue", tags.value);
-};
-watch(tags, () => nextTick(onTagsChange), { deep: true });
-onMounted(onTagsChange);
-
-// options
-const availableOptions = computed(() => {
-  if (!props.options) return false;
-  return props.options.filter((option) => !tags.value.includes(option));
 });
+function inputKeyDown(e: any) {
+  if (["Enter", "Tab"].includes(e.key)) {
+    if (!e.target.value || e.target.value.length === 0) return;
+    tags.value = [...tags.value, e.target.value];
+    e.target.value = "";
+    e.preventDefault();
+  }
+}
+
+function removeTag(tag: string) {
+  tags.value = tags.value.filter((t) => t !== tag);
+}
 </script>
-<style scoped>
-.tag-input {
-  position: relative;
-}
-ul {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 10px;
-  max-width: 75%;
-  overflow-x: auto;
-}
-.tag {
-  padding: 5px;
-  color: white;
-  white-space: nowrap;
-  transition: 0.1s ease background;
-}
-input {
-  width: 100%;
-}
-.delete {
-  color: white;
-  background: none;
-  outline: none;
-  border: none;
-  cursor: pointer;
-}
-@keyframes shake {
-  10%,
-  90% {
-    transform: scale(0.9) translate3d(-1px, 0, 0);
-  }
 
-  20%,
-  80% {
-    transform: scale(0.9) translate3d(2px, 0, 0);
-  }
-
-  30%,
-  50%,
-  70% {
-    transform: scale(0.9) translate3d(-4px, 0, 0);
-  }
-
-  40%,
-  60% {
-    transform: scale(0.9) translate3d(4px, 0, 0);
-  }
-}
-.tag.duplicate {
-  background: rgb(235, 27, 27);
-  animation: shake 1s;
-}
-.count {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 10px;
-  display: block;
-  font-size: 0.8rem;
-  white-space: nowrap;
-}
-.count span {
-  background: #eee;
-  padding: 2px;
-  border-radius: 2px;
-}
-.with-count input {
-  padding-right: 60px;
-}
-.with-count ul {
-  max-width: 60%;
-}
-</style>
+<template>
+  <div class="relative cursor-pointer" @click="$refs.input.focus()">
+    <!-- <component :is="icon" class="input-icon" /> -->
+    <div v-if="props.variant == 'outline' || !props.variant" class="w-full">
+      <Icon
+        v-if="props.icon"
+        class="absolute left-[16px] top-[25%] translate-y-[-50%]"
+        :icon="props.icon"
+      />
+      <div
+        :class="props.icon ? 'pl-13' : ''"
+        class="flex flex-col w-full border border-[#CFD3D5] shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100 bg-white px-4.6 py-3.2"
+      >
+        <span class="text-sm">{{ props.label }}</span>
+        <div class="flex flex-wrap gap-1 mt-2">
+          <transition-group
+            enter-active-class="transition ease-out duration-100"
+            enter-from-class="transform opacity-0 scale-95"
+            enter-to-class="transform opacity-100 scale-100"
+            leave-active-class="transition ease-in duration-75"
+            leave-from-class="transform opacity-100 scale-100"
+            leave-to-class="transform opacity-0 scale-95"
+            class=""
+          >
+            <a
+              v-for="(tag, index) in tags"
+              :key="index"
+              class="bg-indigo-700 hover:bg-base-300 text-white py-1 px-3 text-sm flex"
+              @click.stop="removeTag(tag)"
+            >
+              <span class="mr-2">{{ tag }}</span>
+              <!-- TODO: <Icon icon="CloseSvg" icon-position="left" class="w-5 h-5" /> -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </a>
+          </transition-group>
+          <input
+            ref="input"
+            :placeholder="props.placeholder"
+            :label="props.label"
+            class="text-sm text-gray-400 focus:outline-none bg-transparent pl-2"
+            type="text"
+            :class="classes"
+            @keydown="inputKeyDown"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      v-if="props.variant == 'solo'"
+      class="bg-gray-100 p-[8px] px-[22px] flex gap-x-4.6"
+    >
+      <Icon v-if="props.icon" icon-position="left" :icon="props.icon" class="mt-3" />
+      <div class="flex flex-col w-full">
+        <span class="text-sm">{{ props.label }}</span>
+        <div class="flex flex-wrap gap-1 mt-2">
+          <button
+            v-for="(tag, index) in tags"
+            :key="index"
+            class="bg-black hover:bg-gray-800 text-white py-1 px-3 text-sm flex"
+            @click.stop="removeTag(tag)"
+          >
+            <span class="mr-2">{{ tag }}</span>
+            <!-- TODO: <Icon icon="CloseSvg" icon-position="left" class="w-5 h-5" /> -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <input
+            ref="input"
+            :placeholder="props.placeholder"
+            :label="props.label"
+            class="gap-3 items-center justify-center placeholder-gray-300::placeholder text-sm text-gray-400 outline-none bg-transparent pt-1"
+            type="text"
+            :class="classes"
+            @keydown="inputKeyDown"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

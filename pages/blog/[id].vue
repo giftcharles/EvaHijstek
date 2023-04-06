@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, deleteDoc } from "firebase/firestore";
 import {
   uploadBytesResumable,
   ref as StorageRef,
@@ -11,7 +11,8 @@ const router = useRouter();
 const { $firestore, $storage } = useNuxtApp();
 const isNew = ref(false);
 const imageInput = ref();
-const loadind_image = ref(false);
+const loading_image = ref(false);
+const loading = ref(false);
 const loggedIn = useState("loggedIn");
 const article = ref<any>({
   title: "<TITLE HERE>",
@@ -39,6 +40,7 @@ onMounted(() => {
   console.log("new", route.query);
   isNew.value = !!route.query.new;
   if (!isNew.value) _getPostArticle();
+  article.value.date = new Date()
 });
 
 function saveContent(content: any) {
@@ -46,11 +48,11 @@ function saveContent(content: any) {
 }
 
 function save() {
-  let docRef = doc($firestore, "articles", article.value.slug);
+  loading.value = true;
+  let docRef: any = null;
   if (!route.query.new) {
     docRef = doc($firestore, "articles", route.params.id);
-  }
-  else {
+  } else {
     article.value.slug = article.value.slug_text
       .toLowerCase()
       .slice(0, 20)
@@ -59,28 +61,35 @@ function save() {
     article.value.slug =
       article.value.slug +
       `_${Date.now().toString().slice(5, Date.now().toString().length)}`;
-
+    docRef = doc($firestore, "articles", article.value.slug);
   }
 
   let data = {};
 
   Object.assign(data, article.value);
 
+  console.log(data);
+
   return setDoc(docRef, data, { merge: true })
     .then(() => {
+      loading.value = false;
       router.push({
         path: `/blog/${article.value.slug}`,
       });
     })
-    .catch(console.error);
+    .catch((error) => {
+      alert("Something went wrong! Try again.");
+      console.error(error);
+      loading.value = false;
+    });
 }
 
-function imageInputChange(event) {
+async function imageInputChange(event) {
   const image = event.target.files[0];
   return _uploadFileToStorage(image);
 }
 
-function _uploadFileToStorage(f: File) {
+function _uploadFileToStorage(f: File, depth = 0) {
   const storageRef = StorageRef($storage, `images/${f.name}-${Date.now()}`);
 
   const uploadTask = uploadBytesResumable(storageRef, f);
@@ -89,15 +98,34 @@ function _uploadFileToStorage(f: File) {
     "state_changed",
     (snapshot) => {},
     (error) => {
-      _uploadFileToStorage(f);
+      console.error(error);
+      if (depth < 5)
+        setTimeout(() => {
+          _uploadFileToStorage(f, depth++);
+        }, depth * 500);
     },
     () => {
       return getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
         article.value.featured_image = downloadURL;
-        loadind_image.value = false;
+        loading_image.value = false;
       });
     }
   );
+}
+
+function deletePost() {
+  if (confirm("Are you sure you want to delete this?")) {
+    loading.value = true
+    deleteDoc(doc($firestore, 'articles', route.params.id))
+    .then(() => {
+      loading.value = false
+      router.go(-1);
+    })
+    .catch((error) => {
+      loading.value = false
+      console.error(error)
+    })
+  }
 }
 
 function formatDate(date) {
@@ -183,9 +211,10 @@ provide("article", article);
 
         <ArticleContent class="mt-8" :content="article.content" />
       </div>
-      <div class="flex flex-col gap-y-3 max-w-[34.7%] w-full">
-        <div class="flex items-center">
-          <button class="btn btn-ghost mr-1" @click="$router.go(-1)">
+      <div class="flex flex-col max-w-[34.7%] w-full" :key="article.title">
+        <div class="flex items-center mb-2">
+          <button 
+          class="btn btn-ghost mr-1" @click="$router.go(-1)">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -201,37 +230,77 @@ provide("article", article);
               />
             </svg>
           </button>
-          <span class="font-bold tracking-wide">Portfolio Overview</span>
+          <span class="font-bold tracking-wide text-[12px] font-myriad-light"
+            >Portfolio Overview</span
+          >
 
-          <button v-if="loggedIn" @click="save" class="btn btn-ghost ml-auto">
+          <button
+            v-if="!isNew && loggedIn"
+            :disabled="loading || loading_image"
+            @click="deletePost"
+            class="btn btn-ghost rounded-none btn-error ml-auto"
+          >
+            <!-- delete button -->
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              fill="#fff"
-              version="1.1"
-              id="Capa_1"
-              width="24px"
-              height="24px"
-              viewBox="0 0 407.096 407.096"
-              xml:space="preserve"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="red"
+              class="w-6 h-6"
             >
-              <g>
-                <g>
-                  <path
-                    d="M402.115,84.008L323.088,4.981C319.899,1.792,315.574,0,311.063,0H17.005C7.613,0,0,7.614,0,17.005v373.086    c0,9.392,7.613,17.005,17.005,17.005h373.086c9.392,0,17.005-7.613,17.005-17.005V96.032    C407.096,91.523,405.305,87.197,402.115,84.008z M300.664,163.567H67.129V38.862h233.535V163.567z"
-                  />
-                  <path
-                    d="M214.051,148.16h43.08c3.131,0,5.668-2.538,5.668-5.669V59.584c0-3.13-2.537-5.668-5.668-5.668h-43.08    c-3.131,0-5.668,2.538-5.668,5.668v82.907C208.383,145.622,210.92,148.16,214.051,148.16z"
-                  />
-                </g>
-              </g>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+              />
+            </svg>
+          </button>
+
+          <button
+            :disabled="loading || loading_image"
+            v-if="loggedIn"
+            @click="save"
+          :class="[isNew ? 'ml-auto' : '']"
+            class="btn btn-ghost rounded-none"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              v-if="!loading"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+              />
+            </svg>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              v-else
+              class="w-6 h-6 animate-spin"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+              />
             </svg>
           </button>
 
           <button
             :disabled="isNew"
-            :class="loggedIn ? '' : 'ml-auto'"
-            class="btn btn-ghost"
+            :class="[loggedIn ? '' : 'ml-auto']"
+            class="btn btn-ghost rounded-none"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -249,40 +318,28 @@ provide("article", article);
             </svg>
           </button>
         </div>
-        <hr class="border-gray-100 mb-3" />
+        <hr class="border-gray-300 mb-6" />
         <InlineEditor label="Title" v-model="article.title">
-          <h4>{{ article.title }}</h4>
-          <!-- <h4>MARKETING & PUBLICITY</h4> -->
+          <h4 :key="article.title" class="text-xl font-semibold tracking-wider">
+            {{ article.title }}
+          </h4>
         </InlineEditor>
         <InlineEditor label="Client" v-model="article.client">
-          <span>{{ article.client }}</span>
-          <!-- <span>MERVKI Art Collective</span> -->
+          <span class="text-sm mb-8 font-myriad-light">{{ article.client }}</span>
         </InlineEditor>
-        <span>{{ formatDate(new Date()) }}</span>
-        <!-- <span>22 feb 2023</span> -->
+
         <InlineEditor label="slug" v-model="article.slug_text">
-          <span class="mb-6">{{ article.slug_text }}</span>
-          <!-- <span class="mb-6"
-            >Creating conversation through african fashion, visual art, music &
-            lifestyle.</span
-          > -->
+          <div class="mb-[7vh]">
+            <span class="font-myriad-light">{{
+              formatDate(article.date.toDate ? article.date.toDate() : new Date())
+            }}</span>
+            | <span class="mb-6">{{ article.slug_text }}</span>
+          </div>
         </InlineEditor>
         <InlineEditor input-type="textarea" label="snippet" v-model="article.snippet">
-          <p>
+          <p class="mb-6 font-myriad-light text-[14px]">
             {{ article.snippet }}
           </p>
-          <!-- <p>
-            During my time in Dar es Salaam, Tanzania, I got introduced to the newest
-            generation of visionaries in the creative art scene. Amongst the designers,
-            visual artists, and musicians I met, a particular group of Tanzanian
-            practitioners stood out: a collective known as "Meraki". Their name means; to
-            do something with soul, creativity, and love; To put pieces of yourself in
-            your work. <br /><br />
-            At their archival exhibition at the Nafasi artspace, I came to talk to the
-            creative director and founder of the collective; Emmanuel Tchawi. Since then,
-            we have had a mutually-beneficial partnership and I have been able to learn
-            and grow professionally alongside Meraki
-          </p> -->
         </InlineEditor>
 
         <InlineEditor
@@ -292,15 +349,13 @@ provide("article", article);
           v-model="article.functions"
           label="function"
         >
-          <!-- <span>FUNCTION: MARKETING, ROMOTION, WEB DESIGN</span> -->
-          <!-- <span>FUNCTION: <span v-for="func in article.functions" :key="func"> {{ func }}</span></span> -->
-          <span class="uppercase"
+          <span class="uppercase mb-6 font-myriad-light"
             >FUNCTION: <span class="ml-1">{{ article.functions.join(", ") }}</span></span
           >
         </InlineEditor>
 
-        <InlineEditor v-model="article.website" label="website">
-          <span>SITE: {{ article.website }}</span>
+        <InlineEditor v-model="article.website" label="website" class="">
+          <span class="font-myriad-light">SITE: {{ article.website }}</span>
         </InlineEditor>
 
         <div class="flex"></div>
