@@ -211,8 +211,9 @@ provide("article", article);
 
         <ArticleContent class="mt-8" :content="article.content" />
       </div>
-      <div class="flex flex-col max-w-[34.7%] w-full" :key="article.title">
-        <div class="flex items-center mb-2">
+      <div class="max-w-[34.7%] w-full" :key="article.title">
+        <div class="flex flex-col sticky top-[104px]">
+          <div class="flex items-center mb-2">
           <button 
           class="btn btn-ghost mr-1" @click="$router.go(-1)">
             <svg
@@ -333,7 +334,7 @@ provide("article", article);
             <span class="font-myriad-light">{{
               formatDate(article.date.toDate ? article.date.toDate() : new Date())
             }}</span>
-            | <span class="mb-6">{{ article.slug_text }}</span>
+            | <span class="mb-4">{{ article.slug_text }}</span>
           </div>
         </InlineEditor>
         <InlineEditor input-type="textarea" label="snippet" v-model="article.snippet">
@@ -349,7 +350,7 @@ provide("article", article);
           v-model="article.functions"
           label="function"
         >
-          <span class="uppercase mb-6 font-myriad-light"
+          <span class="uppercase mb-2 font-myriad-light"
             >FUNCTION: <span class="ml-1">{{ article.functions.join(", ") }}</span></span
           >
         </InlineEditor>
@@ -357,8 +358,8 @@ provide("article", article);
         <InlineEditor v-model="article.website" label="website" class="">
           <span class="font-myriad-light">SITE: {{ article.website }}</span>
         </InlineEditor>
+        </div>
 
-        <div class="flex"></div>
       </div>
     </section>
 

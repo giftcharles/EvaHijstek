@@ -33,7 +33,7 @@ watch(
 <template>
   <div class="relative">
     <InputTextEditor v-if="loggedIn && showEditor" :content="content" />
-    <div v-html="content" v-else class="prose max-w-none"></div>
+    <div v-html="content" v-else class="prose prose-xl max-w-none"></div>
     <button
       v-if="loggedIn && !showEditor"
       tabindex="0"
