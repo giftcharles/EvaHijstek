@@ -23,7 +23,8 @@ function submit($event) {
   const isNew = !!!form.value.id;
   console.log("isNew", isNew);
   if (!isNew) {
-    docRef = doc($firestore, "experiences", form.value.id);
+    docRef = doc($firestore, `experiences/${form.value.id}`);
+    console.log("docRef", form.value.id)
   } else {
     form.value.id = docRef.id;
     form.value.time = new Date();
@@ -35,7 +36,9 @@ function submit($event) {
   console.log(data);
 
   if (!isNew) promise = setDoc(docRef, data, { merge: true });
-  else promise = addDoc(docRef, data);
+  else promise = addDoc(docRef, data).then((FireDocRef) => {
+    return setDoc(FireDocRef, {id: FireDocRef.id}, {merge: true})
+  });
 
   return promise
     .then(() => {

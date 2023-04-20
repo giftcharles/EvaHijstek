@@ -79,13 +79,12 @@ onMounted(() => {
           Check out my <a href="#portfolio" class="underline">Portfolio</a> to see my most
           recent projects. During my time in Dar es Salaam, Tanzania, I got introduced to
           the newest generation of visionaries in the creative art scene. Amongst them,
-          the <a href="merakirepp.com" class="underline">Meraki Collective</a>. I have
+          the <a href="https://www.merakirepp.com" target="_blank" class="underline">Meraki Collective</a>. I have
           been able to assist them in the realization of their goal to promote African
           arts and culture to international audiences through branding & web design.
         </p>
 
-        <a href="#past-expiriences" class="hidden"></a>
-        <div class="flex items-center mt-[10vh]">
+        <div id="past-experiences" class="flex items-center mt-[10vh]">
           <h3 class="font-bold tracking-wide">Past experiences.</h3>
           <AddExperience />
         </div>
@@ -95,9 +94,8 @@ onMounted(() => {
           <Experience v-for="experience in experiences" :experience="experience" :key="experience.id" />
         </div>
 
-        <a id="education" class="hidden"></a>
-        <div class="flex items-center mt-[10vh]">
-          <h3 class="font-bold tracking-wide mt-[10vh]">Education.</h3>
+        <div id="education" class="flex items-center mt-[10vh]">
+          <h3 class="font-bold tracking-wide">Education.</h3>
           <AddEducation />
         </div>
         <hr class="border-gray-100 mb-3" />
@@ -109,7 +107,7 @@ onMounted(() => {
 
         
 
-        <h3 class="font-bold tracking-wide mt-[10vh]">Portfolio.</h3>
+        <h3 id="portfolio" class="font-bold tracking-wide mt-[10vh]">Portfolio.</h3>
         <hr class="border-gray-100 mb-3" />
 
         <p class="font-myriad-light text-[14px]">
@@ -136,8 +134,7 @@ onMounted(() => {
       <div></div>
     </section>
 
-    <section class="flex flex-col items-center max-w-[65.3%]">
-      <a id="#contact" class="hidden"></a>
+    <section id="contact" class="flex flex-col items-center max-w-[65.3%]">
       <span class="text-[180px] font-myriad-bold">Contact.</span>
       <div class="flex flex-col">
         <span class="my-[7vh] text-2xl font-bold tracking-wider"

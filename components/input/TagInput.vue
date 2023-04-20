@@ -39,13 +39,7 @@ function removeTag(tag: string) {
 
 <template>
   <div class="relative cursor-pointer" @click="$refs.input.focus()">
-    <!-- <component :is="icon" class="input-icon" /> -->
     <div v-if="props.variant == 'outline' || !props.variant" class="w-full">
-      <Icon
-        v-if="props.icon"
-        class="absolute left-[16px] top-[25%] translate-y-[-50%]"
-        :icon="props.icon"
-      />
       <div
         :class="props.icon ? 'pl-13' : ''"
         class="flex flex-col w-full border border-[#CFD3D5] shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100 bg-white px-4.6 py-3.2"

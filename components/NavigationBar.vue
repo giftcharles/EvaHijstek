@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { signOut } from "firebase/auth";
 
+const selected = ref("");
+let timer: any = null
 const links = [
   {
     text: "Past experiences.",
@@ -30,10 +32,17 @@ function logout() {
 }
 
 function scrollToView(id) {
-  console.log(id)
-  document.getElementById(id).scrollIntoView({
-    behavior: "smooth"
-  });
+  try {
+    timer()
+  } catch (error) {}
+  selected.value = id;
+  const yOffset = -103;
+  const element: any = document.getElementById(id.replace("#", ""));
+  const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+  window.scrollTo({ top: y, behavior: "smooth" });
+  timer = setTimeout(() => {
+    selected.value = null;
+  }, 2000);
 }
 </script>
 
@@ -52,11 +61,17 @@ function scrollToView(id) {
         LogOut
       </button>
       <div class="flex-none mr-3 md:block hidden">
-        <ul class="menu menu-horizontal px-1 tracking-wider">
-          <li v-for="(link, index) in links" :key="index">
-            <a @click="scrollToView(link.to)" :href="link.to" class="font-[700]">{{
-              link.text
-            }}</a>
+        <ul class="rounded-none tracking-wider">
+          <li class="inline" v-for="(link, index) in links" :key="index">
+            <a
+              :class="[
+                link.to === selected ? 'opacity-100' : 'opacity-60 hover:opacity-100',
+              ]"
+              @click.prevent="scrollToView(link.to)"
+              :href="link.to"
+              class="btn btn-ghost font-[700] text-[18.7px] rounded-none hover:bg-transparent capitalize outline-none"
+              >{{ link.text }}</a
+            >
           </li>
         </ul>
       </div>
