@@ -17,12 +17,14 @@ function openExperienceModal() {
 
 <template>
   <div v-if="props.experience" class="flex p-3 bg-transparent items-start">
-    <span class="italic text-white w-24 font-myriad-light">{{
+    <div class="w-24">
+      <span class="italic text-white font-myriad-light">{{
         props.experience.year === new Date().getFullYear()
         ? "Current"
         : props.experience.year
     }}</span>
-    <div class="flex flex-col">
+    </div>
+    <div class="flex flex-col flex-1">
       <span class="text-xl font-semibold" v-if="!!props.experience.title">{{ props.experience.title }}</span>
       <span class="font-myriad-light" v-if="!!props.experience.location">{{ props.experience.location }}</span>
       <span class="font-myriad-light" v-if="!!props.experience.activities && props.experience.activities.length > 0"
