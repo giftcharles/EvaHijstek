@@ -79,7 +79,7 @@ onMounted(() => {
           Check out my <a href="#portfolio" class="underline">Portfolio</a> to see my most
           recent projects. During my time in Dar es Salaam, Tanzania, I got introduced to
           the newest generation of visionaries in the creative art scene. Amongst them,
-          the <a href="https://www.merakirepp.com" target="_blank" class="underline">Meraki Collective</a>. I have
+          the <a href="https://evahijstek.web.app/blog/creating_conversatio_75095232" class="underline">Meraki Collective</a>. I have
           been able to assist them in the realization of their goal to promote African
           arts and culture to international audiences through branding & web design.
         </p>

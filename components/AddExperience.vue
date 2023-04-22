@@ -24,7 +24,7 @@ function submit($event) {
   console.log("isNew", isNew);
   if (!isNew) {
     docRef = doc($firestore, `experiences/${form.value.id}`);
-    console.log("docRef", form.value.id)
+    console.log("docRef", form.value.id);
   } else {
     form.value.id = docRef.id;
     form.value.time = new Date();
@@ -33,12 +33,20 @@ function submit($event) {
   let data = {};
   let promise: any = null;
   Object.assign(data, form.value);
+
+  Object.keys(data).forEach((k) => {
+    if (typeof data[k] === "string" && data[k].charAt(0) == "<") {
+      data[k] = "";
+    }
+  });
+
   console.log(data);
 
   if (!isNew) promise = setDoc(docRef, data, { merge: true });
-  else promise = addDoc(docRef, data).then((FireDocRef) => {
-    return setDoc(FireDocRef, {id: FireDocRef.id}, {merge: true})
-  });
+  else
+    promise = addDoc(docRef, data).then((FireDocRef) => {
+      return setDoc(FireDocRef, { id: FireDocRef.id }, { merge: true });
+    });
 
   return promise
     .then(() => {
@@ -55,7 +63,7 @@ function close() {
   form.value = {
     year: new Date().getFullYear(),
   };
-  editingExperience.value = null
+  editingExperience.value = null;
 }
 </script>
 

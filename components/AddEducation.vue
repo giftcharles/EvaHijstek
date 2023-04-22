@@ -31,6 +31,13 @@ function submit($event) {
   let data = {};
   let promise: any = null;
   Object.assign(data, form.value);
+
+  Object.keys(data).forEach(k => {
+    if(typeof data[k] === 'string' && data[k].charAt(0) == '<') {
+      data[k] = ''
+    }
+  })
+
   console.log(data);
 
   if (!isNew) promise = setDoc(docRef, data, { merge: true });
