@@ -137,8 +137,8 @@ onMounted(() => {
     <section id="contact" class="flex flex-col items-center max-w-[65.3%]">
       <span class="text-[180px] font-myriad-bold">Contact.</span>
       <div class="flex flex-col">
-        <span class="my-[7vh] text-2xl font-bold tracking-wider"
-          >EvaHijstek@gmail.com</span
+        <a href="mailto:evahijstek@gmail.com" class="my-[7vh] text-2xl font-bold tracking-wider"
+          >EvaHijstek@gmail.com</a
         >
         <span class="font-myriad-bold text-xl">Social</span>
         <a class="">LinkedIn</a>

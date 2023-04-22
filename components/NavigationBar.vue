@@ -55,8 +55,7 @@ function scrollToView(id) {
         >
       </div>
       <NuxtLink to="/blog/1?new=1" class="capitalize text-purple-400 mr-2" v-if="loggedIn"
-        >New Article</NuxtLink
-      >
+        >New Article</NuxtLink>
       <button @click="logout" class="capitalize text-red-400" v-if="loggedIn">
         LogOut
       </button>
