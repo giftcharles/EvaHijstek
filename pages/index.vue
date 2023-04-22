@@ -141,9 +141,9 @@ onMounted(() => {
           >EvaHijstek@gmail.com</a
         >
         <span class="font-myriad-bold text-xl">Social</span>
-        <a class="">LinkedIn</a>
-        <a class="">Instagram</a>
-        <a class="">Facebook</a>
+        <a target="_blank" href="https://nl.linkedin.com/in/eva-hijstek-ab0378194" class="">LinkedIn</a>
+        <a target="_blank" href="https://www.instagram.com/evahstk/" class="">Instagram</a>
+        <a target="_blank" href="https://facebook.com/eva.hijstek.1/" class="">Facebook</a>
       </div>
     </section>
   </div>

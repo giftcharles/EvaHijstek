@@ -3,7 +3,7 @@ import { signOut } from "firebase/auth";
 
 const selected = ref("");
 let timer: any = null
-const links = [
+const links = ref([
   {
     text: "Past experiences.",
     to: "#past-experiences",
@@ -20,7 +20,7 @@ const links = [
     text: "Contact.",
     to: "#contact",
   },
-];
+]);
 
 const showMobileNav = ref(null);
 const loggedIn = useState("loggedIn");
@@ -68,7 +68,7 @@ function scrollToView(id) {
               ]"
               @click.prevent="scrollToView(link.to)"
               :href="link.to"
-              class="btn btn-ghost font-[700] text-[18.7px] rounded-none hover:bg-transparent capitalize outline-none"
+              class="btn btn-ghost font-[700] text-[16px] rounded-none hover:bg-transparent capitalize outline-none"
               >{{ link.text }}</a
             >
           </li>
