@@ -45,14 +45,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-[20vh]">
-    <span class="text-[54px] leading-[60px] font-myriad-bold">
+  <div class="flex flex-col md:gap-[20vh] gap-[10vh]">
+    <span class="md:text-[54px] text-[34px] md:leading-[60px] leading-[40px] font-myriad-bold">
       I am a reliable, hardworking,<br />
       and creative problem solver. I enjoy the process of researching target audiences and
       finding suitable promotional tools to reach them.
     </span>
 
-    <section class="flex gap-x-9 relative">
+    <section class="flex flex-col md:flex-row gap-9 relative">
       <div class="flex-1">
         <img
           src="~/assets/images/eva-guinness.jpeg"
@@ -60,7 +60,7 @@ onMounted(() => {
           class="w-full sticky top-[65px]"
         />
       </div>
-      <div class="flex flex-col gap-y-3 max-w-[34.7%]">
+      <div class="flex flex-col gap-y-3 md:max-w-[34.7%]">
         <h3 class="font-bold tracking-wide">Marketing, promotion & creative design</h3>
 
         <p class="font-myriad-light text-[14px]">
@@ -122,7 +122,7 @@ onMounted(() => {
     </section>
 
     <section class="flex gap-x-9 relative">
-      <div class="w-full max-w-[65.3%]">
+      <div class="w-full md:max-w-[65.3%]">
         <ArticlePost
           class="border-t-[1px] border-[#e3e3e370]"
           v-for="(post, index) in posts"
@@ -134,8 +134,8 @@ onMounted(() => {
       <div></div>
     </section>
 
-    <section id="contact" class="flex flex-col items-center max-w-[65.3%]">
-      <span class="text-[180px] font-myriad-bold">Contact.</span>
+    <section id="contact" class="flex flex-col items-center md:max-w-[65.3%]">
+      <span class="md:text-[180px] text-[84px] font-myriad-bold">Contact.</span>
       <div class="flex flex-col">
         <a href="mailto:evahijstek@gmail.com" class="my-[7vh] text-2xl font-bold tracking-wider"
           >EvaHijstek@gmail.com</a

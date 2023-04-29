@@ -2,7 +2,7 @@
 import { signOut } from "firebase/auth";
 
 const selected = ref("");
-let timer: any = null
+let timer: any = null;
 const links = ref([
   {
     text: "Past experiences.",
@@ -31,9 +31,10 @@ function logout() {
   });
 }
 
-function scrollToView(id) {
+function scrollToView(id, mobile=false) {
+  if(mobile) showMobileNav.value = false
   try {
-    timer()
+    timer();
   } catch (error) {}
   selected.value = id;
   const yOffset = -103;
@@ -55,7 +56,8 @@ function scrollToView(id) {
         >
       </div>
       <NuxtLink to="/blog/1?new=1" class="capitalize text-purple-400 mr-2" v-if="loggedIn"
-        >New Article</NuxtLink>
+        >New Article</NuxtLink
+      >
       <button @click="logout" class="capitalize text-red-400" v-if="loggedIn">
         LogOut
       </button>
@@ -96,7 +98,7 @@ function scrollToView(id) {
       </button>
     </div>
 
-    <div class="flex flex-col items-end ml-auto mr-10">
+    <div class="flex-col items-end ml-auto mr-10 md:flex hidden">
       <a href="mailto:Evahijstek@gmail.com" class="text-sm">Evahijstek@gmail.com</a>
       <a href="https://www.linkedin.com/in/EvaHijstek" class="text-sm"
         >www.linkedin.com/in/EvaHijstek</a
@@ -108,8 +110,10 @@ function scrollToView(id) {
       class="bg-white transition-all duration-300 ease-in-out absolute top-0 left-0 w-full md:hidden flex flex-col"
     >
       <div class="flex items-center justify-between mt-[8px] mx-[20px]">
-        <a class="normal-case text-xl font-myriad-bold tracking-widest text-base-100"
-          >EVA HIJSTEK</a
+        <NuxtLink
+          to="/"
+          class="normal-case text-xl font-myriad-bold tracking-widest text-base-100"
+          >EVA HIJSTEK</NuxtLink
         >
         <button class="btn btn-ghost" @click="showMobileNav = !showMobileNav">
           <svg
@@ -127,6 +131,20 @@ function scrollToView(id) {
             />
           </svg>
         </button>
+      </div>
+      <div class="flex mt-[8px] w-full">
+        <!--  -->
+        <ul class="rounded-none tracking-wider w-full p-0 ml-0">
+          <li v-for="(link, index) in links" :key="index">
+            <a
+              :class="[link.to === selected ? '' : '', index == 0 ? 'border-t-2' : '']"
+              @click.prevent="scrollToView(link.to, true)"
+              :href="link.to"
+              class="font-bold text-[42px] block p-3 w-full md:text-[16px] text-base-100 rounded-none active:text-white active:bg-base-100 capitalize outline-none border-b-2 border-base-100"
+              >{{ link.text }}</a
+            >
+          </li>
+        </ul>
       </div>
     </div>
   </div>

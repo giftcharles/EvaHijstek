@@ -7,19 +7,19 @@ const props = withDefaults(
     content: "",
   }
 );
-const route = useRoute()
+const route = useRoute();
 
 onMounted(() => {
-  if(route.query.new) {
-    showEditor.value = true
+  if (route.query.new) {
+    showEditor.value = true;
   }
-})
+});
 const article = inject("article");
 const showEditor = useState("show_editor", () => false);
 const loggedIn = useState("loggedIn");
 const content = ref(article.value.content);
 function toggleEditor() {
-  showEditor.value = !showEditor.value 
+  showEditor.value = !showEditor.value;
 }
 
 watch(
