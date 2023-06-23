@@ -16,7 +16,7 @@ function openExperienceModal() {
 </script>
 
 <template>
-  <div v-if="props.experience" class="flex p-3 bg-transparent items-start">
+  <div v-if="props.experience" class="flex wrap break-words p-3 bg-transparent items-start">
     <div class="w-24">
       <span class="italic text-white font-myriad-light">{{
         props.experience.year === new Date().getFullYear()
@@ -30,7 +30,7 @@ function openExperienceModal() {
       <span class="font-myriad-light" v-if="!!props.experience.activities && props.experience.activities.length > 0"
         >Activities: {{ props.experience.activities.join(", ") }}</span
       >
-      <span class="mt-3 font-myriad-light" v-if="!!props.experience.website">{{ props.experience.website }}</span>
+      <span class="mt-3 font-myriad-light break-words text-sm" v-if="!!props.experience.website">{{ props.experience.website }}</span>
     </div>
 
     <button @click="openExperienceModal" v-if="loggedIn" class="ml-auto">

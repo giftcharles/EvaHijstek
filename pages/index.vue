@@ -1,52 +1,67 @@
 <script setup lang="ts">
-import { collection, getDocs, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { useIntersectionObserver } from "@vueuse/core";
+import { collection, getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
+import gsap from "gsap";
 
 definePageMeta({
   layout: "default",
 });
 
-const loggedIn = useState('loggedIn')
+const loggedIn = useState("loggedIn");
 const { $firestore } = useNuxtApp();
 const posts = ref<any[]>([]);
-const experienceSub = ref(null)
-const educationSub = ref(null)
-const education = ref([])
-const experiences = ref([])
+const articles_html = ref();
+const experiences_html = ref();
+const education_html = ref();
+
+function onEnter(el, done) {
+  gsap.to(el, {
+    delay: el.dataset.index * 0.15,
+    onComplete: done,
+  });
+}
+
 function _getPosts() {
-  let q = query(collection($firestore, "articles"), orderBy('date', 'desc'))
+  let q = query(collection($firestore, "articles"), orderBy("date", "desc"));
   getDocs(q).then((snapshot) => {
     posts.value = snapshot.docs.map((doc) => doc.data());
   });
 }
 
 function _getExpriences() {
-  let q = query(collection($firestore, "experiences"), orderBy('year', 'desc'));
-  experienceSub.value = onSnapshot(q, (snapshot) => {
-    experiences.value = snapshot.docs.map((doc) => doc.data());
+  let q = query(collection($firestore, "experiences"), orderBy("year", "desc"));
+  return getDocs(q).then(snapshot => {
+     return snapshot.docs.map((doc) => doc.data());
   });
 }
 
 function _getEducation() {
-  let q = query(collection($firestore, "education"), orderBy('year', 'desc'));
-  educationSub.value = onSnapshot(q, (snapshot) => {
-    education.value = snapshot.docs.map((doc) => doc.data());
+  let q = query(collection($firestore, "education"), orderBy("year", "desc"));
+  return getDocs(q).then(snapshot => {
+     return snapshot.docs.map((doc) => doc.data());
   });
 }
 
-onUnmounted(() => {
-  experienceSub.value()
-})
-
-onMounted(() => {
-  _getPosts();
-  _getExpriences();
-  _getEducation();
+onMounted(async () => {
+  createObserver(articles_html.value, _getPosts);
+  const { data: experiences } = await useAsyncData("experiences", _getExpriences());
+  const { data: education } = await useAsyncData("education", _getEducation());
 });
+
+function createObserver(target: any, callback) {
+  useIntersectionObserver(target, ([{ isIntersecting }], observerElement) => {
+    if (isIntersecting) {
+      callback();
+    }
+  });
+}
 </script>
 
 <template>
   <div class="flex flex-col md:gap-[20vh] gap-[10vh]">
-    <span class="md:text-[54px] text-[34px] md:leading-[60px] leading-[40px] font-myriad-bold">
+    <span
+      class="md:text-[54px] text-[34px] md:leading-[60px] leading-[40px] font-myriad-bold"
+    >
       I am a reliable, hardworking,<br />
       and creative problem solver. I enjoy the process of researching target audiences and
       finding suitable promotional tools to reach them.
@@ -79,9 +94,14 @@ onMounted(() => {
           Check out my <a href="#portfolio" class="underline">Portfolio</a> to see my most
           recent projects. During my time in Dar es Salaam, Tanzania, I got introduced to
           the newest generation of visionaries in the creative art scene. Amongst them,
-          the <a href="https://evahijstek.web.app/blog/creating_conversatio_75095232" class="underline">Meraki Collective</a>. I have
-          been able to assist them in the realization of their goal to promote African
-          arts and culture to international audiences through branding & web design.
+          the
+          <a
+            href="https://evahijstek.web.app/blog/creating_conversatio_75095232"
+            class="underline"
+            >Meraki Collective</a
+          >. I have been able to assist them in the realization of their goal to promote
+          African arts and culture to international audiences through branding & web
+          design.
         </p>
 
         <div id="past-experiences" class="flex items-center mt-[10vh]">
@@ -90,9 +110,20 @@ onMounted(() => {
         </div>
         <hr class="border-gray-100 mb-3" />
 
-        <div class="flex flex-col">
-          <Experience v-for="experience in experiences" :experience="experience" :key="experience.id" />
-        </div>
+        <TransitionGroup
+          ref="experiences_html"
+          name="articles"
+          class="flex flex-col"
+          tag="div"
+          @enter="onEnter"
+        >
+          <Experience
+            v-for="(experience, index) in experiences"
+            :experience="experience"
+            :key="experience.id"
+            :data-index="index"
+          />
+        </TransitionGroup>
 
         <div id="education" class="flex items-center mt-[10vh]">
           <h3 class="font-bold tracking-wide">Education.</h3>
@@ -100,12 +131,20 @@ onMounted(() => {
         </div>
         <hr class="border-gray-100 mb-3" />
 
-        <div class="flex flex-col">
-          <Education v-for="edu in education" :education="edu" :key="edu.id" />
-          <!-- <Education v-for="index in 7" :k ey="index" /> -->
-        </div>
-
-        
+        <TransitionGroup
+          ref="education_html"
+          class="flex flex-col"
+          name="articles"
+          tag="div"
+          @enter="onEnter"
+        >
+          <Education
+            v-for="(edu, index) in education"
+            :education="edu"
+            :key="edu.id"
+            :data-index="index"
+          />
+        </TransitionGroup>
 
         <h3 id="portfolio" class="font-bold tracking-wide mt-[10vh]">Portfolio.</h3>
         <hr class="border-gray-100 mb-3" />
@@ -121,15 +160,21 @@ onMounted(() => {
       </div>
     </section>
 
-    <section class="flex gap-x-9 relative">
-      <div class="w-full md:max-w-[65.3%]">
+    <section ref="articles_html" class="flex gap-x-9 relative">
+      <TransitionGroup
+        name="articles"
+        class="w-full md:max-w-[65.3%]"
+        tag="div"
+        @enter="onEnter"
+      >
         <ArticlePost
           class="border-t-[1px] border-[#e3e3e370]"
           v-for="(post, index) in posts"
           :post="post"
+          :data-index="index"
           :key="index"
         />
-      </div>
+      </TransitionGroup>
 
       <div></div>
     </section>
@@ -137,13 +182,24 @@ onMounted(() => {
     <section id="contact" class="flex flex-col items-center md:max-w-[65.3%]">
       <span class="md:text-[180px] text-[84px] font-myriad-bold">Contact.</span>
       <div class="flex flex-col">
-        <a href="mailto:evahijstek@gmail.com" class="my-[7vh] text-2xl font-bold tracking-wider"
+        <a
+          href="mailto:evahijstek@gmail.com"
+          class="my-[7vh] text-2xl font-bold tracking-wider"
           >EvaHijstek@gmail.com</a
         >
         <span class="font-myriad-bold text-xl">Social</span>
-        <a target="_blank" href="https://nl.linkedin.com/in/eva-hijstek-ab0378194" class="">LinkedIn</a>
-        <a target="_blank" href="https://www.instagram.com/evahstk/" class="">Instagram</a>
-        <a target="_blank" href="https://facebook.com/eva.hijstek.1/" class="">Facebook</a>
+        <a
+          target="_blank"
+          href="https://nl.linkedin.com/in/eva-hijstek-ab0378194"
+          class=""
+          >LinkedIn</a
+        >
+        <a target="_blank" href="https://www.instagram.com/evahstk/" class=""
+          >Instagram</a
+        >
+        <a target="_blank" href="https://facebook.com/eva.hijstek.1/" class=""
+          >Facebook</a
+        >
       </div>
     </section>
   </div>

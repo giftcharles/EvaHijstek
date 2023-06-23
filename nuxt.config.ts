@@ -1,6 +1,7 @@
 export default defineNuxtConfig({
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss'],
   css: [
     '@/assets/fonts/style.css',
   ],
+  routeRules: {}
 });

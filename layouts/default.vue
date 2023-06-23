@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center min-h-screen">
+  <div class="flex w-screen flex-col items-center min-h-screen">
     <NavigationBar />
     <NuxtPage class="mt-[120px] max-w-[97%] mx-auto" />
     <Footer />
@@ -10,6 +10,11 @@
 * {
   font-family: "Myriad pro regular";
   color: white;
+}
+
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 </style>
 
@@ -50,3 +55,17 @@ onMounted(() => {
   });
 });
 </script>
+
+
+<style>
+.articles-move,
+.articles-enter-active,
+.articles-leave-active {
+  transition: all 0.5s ease;
+}
+.articles-enter-from,
+.articles-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+</style>
